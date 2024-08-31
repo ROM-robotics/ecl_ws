@@ -1,8 +1,6 @@
-<library path="lib/libyoyo_nodelet">
-  <class name="yoyo_node/YoYoNodelet" type="kobuki::KobukiNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet version of the yoyo node
-    </description>
+<library path="lib/libpopo_nodelet">
+  <class name="popo_node/YoYoNodelet" type="kobuki::KobukiNodelet" base_class_type="nodelet::Nodelet">
+    <description>ROM DYNAMICS KOBUKI NODELET</description>
   </class>
 </library>
 

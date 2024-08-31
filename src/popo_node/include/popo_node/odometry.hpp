@@ -36,6 +36,7 @@ namespace kobuki {
 /**
  * @brief  Odometry for the kobuki node.
  **/
+// kobuki နဲ့ အကုန်တူပါတယ်။
 class Odometry {
 public:
   Odometry();
@@ -50,11 +51,11 @@ private:
   geometry_msgs::TransformStamped odom_trans;
   ecl::LegacyPose2D<double> pose;
   std::string odom_frame;
-  std::string base_frame;
+  std::string base_frame; // kobuki မှာမပါဘူး။
   std::string odom_topic;
   ros::Duration cmd_vel_timeout;
   ros::Time last_cmd_time;
-  bool publish_tf;
+  bool publish_tf;        // bool use_imu_heading; မပါတော့ဘူး။
   tf::TransformBroadcaster odom_broadcaster;
   ros::Publisher odom_publisher;
 

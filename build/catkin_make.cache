@@ -1,0 +1,2 @@
+bobo_node
+-DCATKIN_DEVEL_PREFIX=/ecl_ws/devel -DCMAKE_INSTALL_PREFIX=/ecl_ws/install -G Unix Makefiles

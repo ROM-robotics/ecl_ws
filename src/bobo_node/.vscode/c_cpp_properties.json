@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/mr_robot/ros2/developer_ws/install/stm32f1_system_interface/include/**",
+        "/home/mr_robot/ros2/driver_ws/install/slam_toolbox/include/**",
+        "/home/mr_robot/ros2/driver_ws/install/diff_drive_controller/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/mr_robot/Desktop/Git/ecl_ws/src/bobo_node/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,8 @@
+<library path="lib/libyoyo_nodelet">
+  <class name="yoyo_node/YoYoNodelet" type="kobuki::KobukiNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet version of the yoyo node
+    </description>
+  </class>
+</library>
+

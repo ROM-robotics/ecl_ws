@@ -1,0 +1,6 @@
+<library path="lib/libkobuki_nodelet">
+  <class name="bobo_node/boboNodelet" type="kobuki::boboNodelet" base_class_type="nodelet::Nodelet">
+    <description>ROM DYNAMICS KOBUKI NODELET</description>
+  </class>
+</library>
+

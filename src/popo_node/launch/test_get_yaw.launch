@@ -1,0 +1,7 @@
+<launch>
+	<node pkg="yoyo_node" type="getYaw.py" name="getYaw">
+		<remap from="imu" to="/imu"/>
+		<remap from="angle" to="/mobile_base/debug/imu_angle"/>
+		<remap from="angle_rate" to="/mobile_base/debug/imu_angle_rate"/>
+	</node>
+</launch>

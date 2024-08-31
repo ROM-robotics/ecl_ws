@@ -1,0 +1,6 @@
+<launch>
+	<node pkg="yoyo_node" type="getOdom2D.py" name="getOdom2D">
+		<remap from="odom" to="/mobile/odom"/>
+		<remap from="pose2d" to="/mobile_base/debug/odom_pose2d"/>
+	</node>
+</launch>

@@ -2,7 +2,7 @@
  ** Includes
  *****************************************************************************/
 
-#include "../../include/bobo_node/kobuki_ros.hpp"
+#include "../../include/popo_node/kobuki_ros.hpp"
 
 /*****************************************************************************
  ** Namespaces
@@ -14,46 +14,6 @@ namespace kobuki
 /*****************************************************************************
  ** Implementation
  *****************************************************************************/
-
-void KobukiRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
-{
-  if (kobuki.isEnabled())
-  {
-    // For now assuming this is in the robot frame, but probably this
-    // should be global frame and require a transform
-    //double vx = msg->linear.x;        // in (m/s)
-    //double wz = msg->angular.z;       // in (rad/s)
-    ROS_DEBUG_STREAM("Kobuki : velocity command received [" << msg->linear.x << "],[" << msg->angular.z << "]");
-    kobuki.setBaseControl(msg->linear.x, msg->angular.z);
-    odometry.resetTimeout();
-  }
-  return;
-}
-
-
-void KobukiRos::subscribeLed1Command(const kobuki_msgs::LedConstPtr msg)
-{
-  switch( msg->value ) {
-  case kobuki_msgs::Led::GREEN:  kobuki.setLed(Led1, Green ); break;
-  case kobuki_msgs::Led::ORANGE: kobuki.setLed(Led1, Orange ); break; 
-  case kobuki_msgs::Led::RED:    kobuki.setLed(Led1, Red ); break;
-  case kobuki_msgs::Led::BLACK:  kobuki.setLed(Led1, Black ); break;
-  default: ROS_WARN_STREAM("Kobuki : led 1 command value invalid."); break;
-  }
-  return;
-}
-
-void KobukiRos::subscribeLed2Command(const kobuki_msgs::LedConstPtr msg)
-{
-  switch( msg->value ) {
-  case kobuki_msgs::Led::GREEN:  kobuki.setLed(Led2, Green ); break;
-  case kobuki_msgs::Led::ORANGE: kobuki.setLed(Led2, Orange ); break;
-  case kobuki_msgs::Led::RED:    kobuki.setLed(Led2, Red ); break;
-  case kobuki_msgs::Led::BLACK:  kobuki.setLed(Led2, Black ); break;
-  default: ROS_WARN_STREAM("Kobuki : led 2 command value invalid."); break;
-  }
-  return;
-}
 
 void KobukiRos::subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConstPtr msg)
 {
@@ -114,58 +74,27 @@ void KobukiRos::subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerCo
   return;
 }
 
-/**
- * @brief Play a predefined sound (single sound or sound sequence)
- */
-void KobukiRos::subscribeSoundCommand(const kobuki_msgs::SoundConstPtr msg)
+void KobukiRos::subscribeLed1Command(const kobuki_msgs::LedConstPtr msg)
 {
-  if ( msg->value == kobuki_msgs::Sound::ON )
-  {
-    kobuki.playSoundSequence(On);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::OFF )
-  {
-    kobuki.playSoundSequence(Off);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::RECHARGE )
-  {
-    kobuki.playSoundSequence(Recharge);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::BUTTON )
-  {
-    kobuki.playSoundSequence(Button);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::ERROR )
-  {
-    kobuki.playSoundSequence(Error);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::CLEANINGSTART )
-  {
-    kobuki.playSoundSequence(CleaningStart);
-  }
-  else if ( msg->value == kobuki_msgs::Sound::CLEANINGEND )
-  {
-    kobuki.playSoundSequence(CleaningEnd);
-  }
-  else
-  {
-    ROS_WARN_STREAM("Kobuki : Invalid sound command! There is no sound stored for value '" << msg->value << "'.");
+  switch( msg->value ) {
+  case kobuki_msgs::Led::GREEN:  kobuki.setLed(Led1, Green ); break;
+  case kobuki_msgs::Led::ORANGE: kobuki.setLed(Led1, Orange ); break; 
+  case kobuki_msgs::Led::RED:    kobuki.setLed(Led1, Red ); break;
+  case kobuki_msgs::Led::BLACK:  kobuki.setLed(Led1, Black ); break;
+  default: ROS_WARN_STREAM("Kobuki : led 1 command value invalid."); break;
   }
   return;
 }
 
-/**
- * @brief Reset the odometry variables.
- */
-void KobukiRos::subscribeResetOdometry(const std_msgs::EmptyConstPtr /* msg */)
+void KobukiRos::subscribeLed2Command(const kobuki_msgs::LedConstPtr msg)
 {
-  ROS_INFO_STREAM("Kobuki : Resetting the odometry. [" << name << "].");
-  joint_states.position[0] = 0.0; // wheel_left
-  joint_states.velocity[0] = 0.0;
-  joint_states.position[1] = 0.0; // wheel_right
-  joint_states.velocity[1] = 0.0;
-  odometry.resetOdometry();
-  kobuki.resetOdometry();
+  switch( msg->value ) {
+  case kobuki_msgs::Led::GREEN:  kobuki.setLed(Led2, Green ); break;
+  case kobuki_msgs::Led::ORANGE: kobuki.setLed(Led2, Orange ); break;
+  case kobuki_msgs::Led::RED:    kobuki.setLed(Led2, Red ); break;
+  case kobuki_msgs::Led::BLACK:  kobuki.setLed(Led2, Black ); break;
+  default: ROS_WARN_STREAM("Kobuki : led 2 command value invalid."); break;
+  }
   return;
 }
 
@@ -190,17 +119,94 @@ void KobukiRos::subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg)
   }
 }
 
-void KobukiRos::subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg)
+void KobukiRos::subscribeResetOdometry(const std_msgs::EmptyConstPtr /* msg */)
 {
-  if( msg->p_gain < 0.0f ||  msg->i_gain < 0.0f ||  msg->d_gain < 0.0f) {
-    ROS_ERROR_STREAM("Kobuki : All controller gains should be positive. [" << name << "]");
-    return;
-  }
-  kobuki.setControllerGain(msg->type,
-                           static_cast<unsigned int>(msg->p_gain*1000.0f),
-                           static_cast<unsigned int>(msg->i_gain*1000.0f),
-                           static_cast<unsigned int>(msg->d_gain*1000.0f));
+  ROS_INFO_STREAM("Kobuki : Resetting the odometry. [" << name << "].");
+  joint_states.position[0] = 0.0; // wheel_left
+  joint_states.velocity[0] = 0.0;
+  joint_states.position[1] = 0.0; // wheel_right
+  joint_states.velocity[1] = 0.0;
+  odometry.resetOdometry();
+  kobuki.resetOdometry();
   return;
 }
+
+void KobukiRos::subscribeVelocityCommand()
+{
+  if (kobuki.isEnabled())
+  {
+    // For now assuming this is in the robot frame, but probably this
+    // should be global frame and require a transform
+    //double vx = msg->linear.x;        // in (m/s)
+    //double wz = msg->angular.z;       // in (rad/s)
+    ROS_DEBUG_STREAM("Kobuki : velocity command received [" << msg->linear.x << "],[" << msg->angular.z << "]");
+    kobuki.setBaseControl(msg->linear.x, msg->angular.z);
+    odometry.resetTimeout();
+  }
+  return;
+}
+
+// ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
+void KobukiRos::subscribeBatteryInfo(const :: msg){}
+void KobukiRos::subscribeCancelIap(const :: msg){}
+void KobukiRos::subscribeCurrentInfo(const :: msg){}
+void KobukiRos::subscribeForceStop(const :: msg){}
+void KobukiRos::subscribeSetToBase(const :: msg){}
+void KobukiRos::subscribeSetDocking(const :: msg){}
+void KobukiRos::subscribeControllerIap(const :: msg){}
+
+/* ဒါတွေက yoyo မှာ မလိုဘူး။ */
+/**
+ * @brief Play a predefined sound (single sound or sound sequence)
+ */
+// void KobukiRos::subscribeSoundCommand(const kobuki_msgs::SoundConstPtr msg)
+// {
+//   if ( msg->value == kobuki_msgs::Sound::ON )
+//   {
+//     kobuki.playSoundSequence(On);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::OFF )
+//   {
+//     kobuki.playSoundSequence(Off);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::RECHARGE )
+//   {
+//     kobuki.playSoundSequence(Recharge);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::BUTTON )
+//   {
+//     kobuki.playSoundSequence(Button);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::ERROR )
+//   {
+//     kobuki.playSoundSequence(Error);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::CLEANINGSTART )
+//   {
+//     kobuki.playSoundSequence(CleaningStart);
+//   }
+//   else if ( msg->value == kobuki_msgs::Sound::CLEANINGEND )
+//   {
+//     kobuki.playSoundSequence(CleaningEnd);
+//   }
+//   else
+//   {
+//     ROS_WARN_STREAM("Kobuki : Invalid sound command! There is no sound stored for value '" << msg->value << "'.");
+//   }
+//   return;
+// }
+
+// void KobukiRos::subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg)
+// {
+//   if( msg->p_gain < 0.0f ||  msg->i_gain < 0.0f ||  msg->d_gain < 0.0f) {
+//     ROS_ERROR_STREAM("Kobuki : All controller gains should be positive. [" << name << "]");
+//     return;
+//   }
+//   kobuki.setControllerGain(msg->type,
+//                            static_cast<unsigned int>(msg->p_gain*1000.0f),
+//                            static_cast<unsigned int>(msg->i_gain*1000.0f),
+//                            static_cast<unsigned int>(msg->d_gain*1000.0f));
+//   return;
+// }
 
 } // namespace kobuki

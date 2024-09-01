@@ -4,13 +4,13 @@
  * @brief Robot diagnostics implementation.
  *
  * License: BSD
- *   https://raw.github.com/yujinrobot/kobuki/hydro-devel/bobo_node/LICENSE
+ *   https://raw.github.com/yujinrobot/kobuki/hydro-devel/popo_node/LICENSE
  **/
 /*****************************************************************************
  ** Includes
  *****************************************************************************/
 
-#include "../../include/bobo_node/diagnostics.hpp"
+#include "../../include/popo_node/diagnostics.hpp"
 
 /*****************************************************************************
 ** Namespaces

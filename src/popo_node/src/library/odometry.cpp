@@ -1,5 +1,5 @@
 /**
- * @file /bobo_node/src/node/odometry.cpp
+ * @file /popo_node/src/node/odometry.cpp
  *
  * @brief File comment
  *
@@ -11,7 +11,7 @@
 ** Includes
 *****************************************************************************/
 
-#include "../../include/bobo_node/odometry.hpp"
+#include "../../include/popo_node/odometry.hpp"
 
 /*****************************************************************************
 ** Namespaces

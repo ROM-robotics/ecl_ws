@@ -6,7 +6,7 @@
 #include <tf/tf.h>
 #include <ecl/streams/string_stream.hpp>
 #include <kobuki_msgs/VersionInfo.h>
-#include "bobo_node/kobuki_ros.hpp"
+#include "popo_node/kobuki_ros.hpp"
 
 /*****************************************************************************
  ** Namespaces
@@ -366,38 +366,13 @@ void KobukiRos::subscribeTopics(ros::NodeHandle& nh)
   //controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KobukiRos::subscribeControllerInfoCommand, this);
 
   // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
-  battery_info_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  cancel_iap_subscriber     = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  current_info_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  force_stop_subscriber     = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  send_to_base_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  set_docking_subscriber    = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-  controller_iap_subscriber = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
-
-/* ဖျက် ရန် */
-  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
-  ros::Subscriber digital_output_command_subscriber; 
-  ros::Subscriber external_power_command_subscriber;
-  ros::Subscriber led1_command_subscriber; 
-  ros::Subscriber led2_command_subscriber;
-  ros::Subscriber motor_power_subscriber; 
-  ros::Subscriber reset_odometry_subscriber;
-  ros::Subscriber velocity_command_subscriber; 
-  // ဒါက yoyo မှာပါပေမဲ့ မသုံးဘူးထင်တယ်။
-  //ros::Subscriber controller_info_command_subscriber;
-  
-  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
-  ros::Subscriber battery_info_subscriber;
-  ros::Subscriber cancel_iap_subscriber;
-  ros::Subscriber current_info_subscriber;
-  ros::Subscriber force_stop_subscriber;
-  ros::Subscriber send_to_base_subscriber;
-  ros::Subscriber set_docking_subscriber;
-  ros::Subscriber controller_iap_subscriber;
-  
-  
-  
-  
+  battery_info_subscriber   = nh.subscribe(std::string("commands/battery_info"), 10, &KobukiRos::subscribeBatteryInfo, this);
+  cancel_iap_subscriber     = nh.subscribe(std::string("commands/cancel_iap"), 10, &KobukiRos::subscribeCancelIap, this);
+  current_info_subscriber   = nh.subscribe(std::string("commands/current_info"), 10, &KobukiRos::subscribeCurrentInfo, this);
+  force_stop_subscriber     = nh.subscribe(std::string("commands/force_stop"), 10, &KobukiRos::subscribeForceStop, this);
+  send_to_base_subscriber   = nh.subscribe(std::string("commands/send_to_base"), 10, &KobukiRos::subscribeSetToBase, this);
+  set_docking_subscriber    = nh.subscribe(std::string("commands/set_docking"), 10, &KobukiRos::subscribeSetDocking, this);
+  controller_iap_subscriber = nh.subscribe(std::string("commands/updateonline_iap"), 10, &KobukiRos::subscribeControllerIap, this);
   
 }
 

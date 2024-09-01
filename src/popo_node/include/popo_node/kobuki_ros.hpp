@@ -73,13 +73,14 @@ private:
   /*********************
    ** Ros Comms
    **********************/
-  // ဒီကောင်တွေက kobuki မှာရှိပါတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   ros::Publisher version_info_publisher, controller_info_publisher;
   ros::Publisher sensor_state_publisher, joint_state_publisher, dock_ir_publisher;
   ros::Publisher button_event_publisher, input_event_publisher, robot_event_publisher;
   ros::Publisher bumper_event_publisher, cliff_event_publisher, power_event_publisher; 
   ros::Publisher raw_data_command_publisher, raw_data_stream_publisher, raw_control_command_publisher;
 
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   // ဒီ publisher တွေက kobuki မှာ မရှိတော့ တိုက်ရိုက်ယူလို့မရနိုင်ဘူး။ မှီငြမ်းရေးဖို့လိုပါတယ်။ 
   ros::Publisher send_app_publisher, battery_event_publisher;
   ros::Publisher upgrade_result_publisher;
@@ -90,13 +91,13 @@ private:
   ros::Publisher wheel_status_publisher;
   ros::Publisher range_sensor_publisher;
 
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   ros::Subscriber velocity_command_subscriber, digital_output_command_subscriber, external_power_command_subscriber;
   ros::Subscriber controller_info_command_subscriber;
   ros::Subscriber led1_command_subscriber, led2_command_subscriber;
   ros::Subscriber motor_power_subscriber, reset_odometry_subscriber;
 
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   ros::Subscriber controller_iap_subscriber;
   ros::Subscriber force_stop_subscriber;
   ros::Subscriber set_docking_subscriber;
@@ -105,17 +106,17 @@ private:
   ros::Subscriber cancel_iap_subscriber;
   ros::Subscriber send_to_base_subscriber;
 
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void advertiseTopics(ros::NodeHandle& nh);
   void subscribeTopics(ros::NodeHandle& nh);
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   void authTimer(const ros::TimerEvent& e);
   std::vector<std::string> splitString(std::string srcStr, std::string delimStr,bool repeatedCharIgnored);
 
   /*********************
   ** Ros Callbacks
   **********************/
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void subscribeVelocityCommand(const geometry_msgs::TwistConstPtr);
   void subscribeLed1Command(const driver_msgs::LedConstPtr);
   void subscribeLed2Command(const driver_msgs::LedConstPtr);
@@ -124,7 +125,7 @@ private:
   void subscribeResetOdometry(const std_msgs::EmptyConstPtr);
   void subscribeMotorPower(const driver_msgs::MotorPowerConstPtr msg);
 
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   void subscribeControllerIapCommand(const std_msgs::String::ConstPtr& msg);
   void subscribeForceStop(const std_msgs::Int32::ConstPtr& msg);
   void subscribeSetDocking(const std_msgs::Int32::ConstPtr& msg);
@@ -136,7 +137,7 @@ private:
   /*********************
    ** SigSlots
    **********************/
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   ecl::Slot<const VersionInfo&> slot_version_info;
   ecl::Slot<> slot_stream_data;
   ecl::Slot<const ButtonEvent&> slot_button_event;
@@ -150,20 +151,21 @@ private:
   ecl::Slot<Command::Buffer&> slot_raw_data_command;
   ecl::Slot<PacketFinder::BufferType&> slot_raw_data_stream;
   ecl::Slot<const std::vector<short>&> slot_raw_control_command;
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
+  ecl::Slot<const WheelStatus&> slot_wheel_event; // msg type အနည်းငယ် ပြောင်းထားတယ်။
+
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   ecl::Slot<const PowerEvent&> slot_battery_event;
   ecl::Slot<const UpgradeEvent&>  slot_upgrade_event;
   ecl::Slot<const PowerOffEvent&> slot_power_off_event;
   ecl::Slot<const RangeSensorEvent&> slot_range_sensor_event;
   ecl::Slot<const BatteryInfoEvent&> slot_battery_info_event;
   ecl::Slot<const CurrentInfoEvent&> slot_current_info_event;
-  ecl::Slot<const WheelStatusEvent&> slot_wheel_status_event;
   ecl::Slot<PacketFinder::BufferType&> slot_send_app_steam;
 
   /*********************
    ** Slot Callbacks
    **********************/
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void publishVersionInfo(const VersionInfo &version_info);
   void processStreamData();
   void publishWheelState();
@@ -176,17 +178,19 @@ private:
   void publishPowerEvent(const PowerEvent &event);
   void publishInputEvent(const InputEvent &event);
   void publishRobotEvent(const RobotEvent &event);
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
-  void publishPowerOffEvent(const PowerOffEvent &event);
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
+  void publishWheelEvent(const WheelStatusEvent &event);
   void publishBatteryEvent(const PowerEvent &event);
   void publishUpgradeEvent(const UpgradeEvent &event);
+  void publishPowerOffEvent(const PowerOffEvent &event);
+  void publishRangeSensorEvent(const RangeSensorEvent &event);
   void publishBatteryInfoEvent(const BatteryInfoEvent &event);
   void publishCurrentInfoEvent(const CurrentInfoEvent &event);
-  void publishWheelStatusEvent(const WheelStatusEvent &event);
-  void publishRangeSensorEvent(const RangeSensorEvent &event);
-
+  // မတွေ့
+  void publishSendAppStream(); 
+    
   // debugging
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void rosDebug(const std::string &msg) { ROS_DEBUG_STREAM("PoPo : " << msg); }
   void rosInfo(const std::string &msg) { ROS_INFO_STREAM("PoPo : " << msg); }
   void rosWarn(const std::string &msg) { ROS_WARN_STREAM("PoPo : " << msg); }
@@ -210,11 +214,11 @@ private:
     }
   }
 
-  // ဒီကောင်တွေက kobuki မှာရှိတယ်။
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void publishRawDataCommand(Command::Buffer &buffer);
   void publishRawDataStream(PacketFinder::BufferType &buffer);
   void publishSendApp(PacketFinder::BufferType &buffer);
-  // ဒီကောင်တွေက kobuki မှာ မရှိဘူး။
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   void publishRawControlCommand(const std::vector<short> &velocity_commands);
 
   bool check_file(std::string file_path);

@@ -105,7 +105,7 @@ bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   slot_button_event.connect(name + std::string("/events/button"));      // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/ButtonEvent]
   slot_bumper_event.connect(name + std::string("/events/bumper"));      // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/BumperEvent]
   slot_cliff_event.connect(name + std::string("/events/cliff"));        // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/CliffEvent]
-  slot_power_event.connect(name + std::string("/events/power_XXX"));    // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [std_msgs/Int32]
+  slot_power_event.connect(name + std::string("/events/power_XXX"));    // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [std_msgs/Int32]  //-------XXXXXXXXXXXXXXXXXXXXXXXXX လို/မလို မသိသေး XXXXX
   slot_input_event.connect(name + std::string("/events/digital_input"));// topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/DigitalInputEvent]
   slot_robot_event.connect(name + std::string("/events/online"));       // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/RobotStateEvent]
   slot_debug.connect(name + std::string("/ros_debug")); // ရှိတော့ရှိတယ်။ ပုံစံကွဲတယ်
@@ -131,10 +131,10 @@ bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   //slot_controller_info.connect(name + std::string("/controller_info")); // reeman မှာ topic မရှိ
   //slot_stream_data.connect(name + std::string("/stream_data"));         // reeman မှာ topic မရှိ
 
-  /* အောက်ပိုင်းကို ဆက်လက်စစ်ဆေးရန် */
   /*********************
    ** Driver Parameters
    **********************/
+  /* parameters ဘယ်ကလာမှန်းမသိသေး။ */
   Parameters parameters;
 
   nh.param("acceleration_limiter", parameters.enable_acceleration_limiter, false);
@@ -164,6 +164,7 @@ bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   }
   else
   {
+    // string မှာ ရှာလို့မရဘူးဆိုရင် ( no index position )
     if (robot_description.find(wheel_left_joint_name) == std::string::npos) {
       ROS_WARN("Kobuki : joint name %s not found on robot description", wheel_left_joint_name.c_str());
     }
@@ -317,7 +318,7 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
   button_event_publisher        = nh.advertise < driverr_msgs::ButtonEvent > ("events/button", 100);
   bumper_event_publisher        = nh.advertise < driverr_msgs::BumperEvent > ("events/bumper", 100);
   cliff_event_publisher         = nh.advertise < driverr_msgs::CliffEvent >  ("events/cliff",  100);
-  power_event_publisher         = nh.advertise < std_msgs::Int32 > ("events/power_XXX", 100);
+  power_event_publisher         = nh.advertise < std_msgs::Int32 > ("events/power_XXX", 100); //-------XXXXXXXXXXXXXXXXXXXXXXXXX လို/မလို မသိသေး XXXXX
   input_event_publisher         = nh.advertise < driverr_msgs::DigitalInputEvent > ("events/digital_input", 100);
   robot_event_publisher         = nh.advertise < driverr_msgs::RobotStateEvent > ("events/online", 100, true); // also latched
   // debug
@@ -353,16 +354,51 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
  */
 void KobukiRos::subscribeTopics(ros::NodeHandle& nh)
 {
-  velocity_command_subscriber = nh.subscribe(std::string("commands/velocity"), 10, &KobukiRos::subscribeVelocityCommand, this);
+  // ဒီကောင်တွေက topic name တွေ အတိအကျမတူပေမဲ့ kobuki နဲ့ yoyo မှာရှိတယ်။
+  digital_output_command_subscriber = nh.subscribe(std::string("commands/digital_output"), 10, &KobukiRos::subscribeDigitalOutputCommand, this);
+  external_power_command_subscriber = nh.subscribe(std::string("commands/external_power"), 10, &KobukiRos::subscribeExternalPowerCommand, this);
+  led1_command_subscriber           = nh.subscribe(std::string("commands/led1"), 10, &KobukiRos::subscribeLed1Command, this);
+  led2_command_subscriber           = nh.subscribe(std::string("commands/led2"), 10, &KobukiRos::subscribeLed2Command, this);
+  motor_power_subscriber            = nh.subscribe(std::string("commands/motor_power"), 10, &KobukiRos::subscribeMotorPower, this);
+  reset_odometry_subscriber         = nh.subscribe(std::string("commands/reset_odometry"), 10, &KobukiRos::subscribeResetOdometry, this);
+  velocity_command_subscriber       = nh.subscribe(std::string("commands/velocity"), 10, &KobukiRos::subscribeVelocityCommand, this);
+  //sound_command_subscriber =  nh.subscribe(std::string("commands/sound"), 10, &KobukiRos::subscribeSoundCommand, this);
+  //controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KobukiRos::subscribeControllerInfoCommand, this);
+
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
+  battery_info_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  cancel_iap_subscriber     = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  current_info_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  force_stop_subscriber     = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  send_to_base_subscriber   = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  set_docking_subscriber    = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+  controller_iap_subscriber = nh.subscribe(std::string(""), 10, &KobukiRos::, this);
+
+/* ဖျက် ရန် */
+  // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
+  ros::Subscriber digital_output_command_subscriber; 
+  ros::Subscriber external_power_command_subscriber;
+  ros::Subscriber led1_command_subscriber; 
+  ros::Subscriber led2_command_subscriber;
+  ros::Subscriber motor_power_subscriber; 
+  ros::Subscriber reset_odometry_subscriber;
+  ros::Subscriber velocity_command_subscriber; 
+  // ဒါက yoyo မှာပါပေမဲ့ မသုံးဘူးထင်တယ်။
+  //ros::Subscriber controller_info_command_subscriber;
   
-  led1_command_subscriber =  nh.subscribe(std::string("commands/led1"), 10, &KobukiRos::subscribeLed1Command, this);
-  led2_command_subscriber =  nh.subscribe(std::string("commands/led2"), 10, &KobukiRos::subscribeLed2Command, this);
-  digital_output_command_subscriber =  nh.subscribe(std::string("commands/digital_output"), 10, &KobukiRos::subscribeDigitalOutputCommand, this);
-  external_power_command_subscriber =  nh.subscribe(std::string("commands/external_power"), 10, &KobukiRos::subscribeExternalPowerCommand, this);
-  sound_command_subscriber =  nh.subscribe(std::string("commands/sound"), 10, &KobukiRos::subscribeSoundCommand, this);
-  reset_odometry_subscriber = nh.subscribe("commands/reset_odometry", 10, &KobukiRos::subscribeResetOdometry, this);
-  motor_power_subscriber = nh.subscribe("commands/motor_power", 10, &KobukiRos::subscribeMotorPower, this);
-  controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KobukiRos::subscribeControllerInfoCommand, this);
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
+  ros::Subscriber battery_info_subscriber;
+  ros::Subscriber cancel_iap_subscriber;
+  ros::Subscriber current_info_subscriber;
+  ros::Subscriber force_stop_subscriber;
+  ros::Subscriber send_to_base_subscriber;
+  ros::Subscriber set_docking_subscriber;
+  ros::Subscriber controller_iap_subscriber;
+  
+  
+  
+  
+  
 }
 
 

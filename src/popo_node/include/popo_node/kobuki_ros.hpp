@@ -103,19 +103,24 @@ private:
   //ros::Publisher controller_info_publisher;
 
   // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
-  ros::Subscriber velocity_command_subscriber, digital_output_command_subscriber, external_power_command_subscriber;
-  ros::Subscriber controller_info_command_subscriber;
-  ros::Subscriber led1_command_subscriber, led2_command_subscriber;
-  ros::Subscriber motor_power_subscriber, reset_odometry_subscriber;
-
+  ros::Subscriber digital_output_command_subscriber; 
+  ros::Subscriber external_power_command_subscriber;
+  ros::Subscriber led1_command_subscriber; 
+  ros::Subscriber led2_command_subscriber;
+  ros::Subscriber motor_power_subscriber; 
+  ros::Subscriber reset_odometry_subscriber;
+  ros::Subscriber velocity_command_subscriber; 
+  // ဒါက yoyo မှာပါပေမဲ့ မသုံးဘူးထင်တယ်။
+  //ros::Subscriber controller_info_command_subscriber;
+  
   // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
-  ros::Subscriber controller_iap_subscriber;
-  ros::Subscriber force_stop_subscriber;
-  ros::Subscriber set_docking_subscriber;
   ros::Subscriber battery_info_subscriber;
-  ros::Subscriber current_info_subscriber;
   ros::Subscriber cancel_iap_subscriber;
+  ros::Subscriber current_info_subscriber;
+  ros::Subscriber force_stop_subscriber;
   ros::Subscriber send_to_base_subscriber;
+  ros::Subscriber set_docking_subscriber;
+  ros::Subscriber controller_iap_subscriber;
 
   // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   void advertiseTopics(ros::NodeHandle& nh);
@@ -189,8 +194,8 @@ private:
   void publishPowerEvent(const PowerEvent &event);
   void publishInputEvent(const InputEvent &event);
   void publishRobotEvent(const RobotEvent &event);
-  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
-  void publishWheelEvent(const WheelStatusEvent &event);
+  // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။ slot_callbacks.cpp မှာ input parameters များပြင်ပြီး။
+  void publishWheelEvent(const WheelStatus &event);
   void publishBatteryEvent(const PowerEvent &event);
   void publishUpgradeEvent(const UpgradeEvent &event);
   void publishPowerOffEvent(const PowerOffEvent &event);

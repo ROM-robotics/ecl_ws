@@ -429,56 +429,56 @@ void KobukiRos::publishRawControlCommand(const std::vector<short> &velocity_comm
   return;
 }
 
+/* ဒီက စပြီး function() တွေက input parameters types တွေပါပြင်ပါတယ်။ */
+/* function() အများစုကလည်း အသစ်ဖြစ်ပါတယ်။ */
+/* implementation တွေတော့ မရေးရသေး */
 void KobukiRos::publishWheelEvent(const WheelEvent &event)
 {
-  if (ros::ok())
-  {
-    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
-    switch(event.state) {
-      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
-      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
-      default: break;
-    }
-    switch(event.wheel) {
-      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
-      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
-      default: break;
-    }
-    wheel_event_publisher.publish(msg);
-  }
+  // if (ros::ok())
+  // {
+  //   kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
+  //   switch(event.state) {
+  //     case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
+  //     case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
+  //     default: break;
+  //   }
+  //   switch(event.wheel) {
+  //     case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
+  //     case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
+  //     default: break;
+  //   }
+  //   wheel_event_publisher.publish(msg);
+  // }
 }
 
-void KobukiRos::publishBatteryEvent(const WheelEvent &event)
+
+void KobukiRos::publishUpgradeEvent(const UpgradeEvent &event)
 {
   
 }
 
-void KobukiRos::publishUpgradeEvent(const WheelEvent &event)
+void KobukiRos::publishPowerOffEvent(const PowerOffEvent &event)
 {
   
 }
 
-void KobukiRos::publishPowerOffEvent(const WheelEvent &event)
+void KobukiRos::publishRangeSensorEvent(const RangeSensorEvent &event)
 {
   
 }
 
-void KobukiRos::publishRangeSensorEvent(const WheelEvent &event)
+void KobukiRos::publishBatteryInfoEvent(const BatteryInfoEvent &event)
 {
   
 }
 
-void KobukiRos::publishBatteryInfoEvent(const WheelEvent &event)
+void KobukiRos::publishCurrentInfoEvent(const CurrentInfoEvent &event)
 {
   
 }
 
-void KobukiRos::publishCurrentInfoEvent(const WheelEvent &event)
-{
-  
-}
-
-void KobukiRos::publishSendAppStream(const WheelEvent &event)
+/* ဒါကတော့ input param မထည့်သေးဘူး။ */
+void KobukiRos::publishSendAppStream()
 {
   
 }

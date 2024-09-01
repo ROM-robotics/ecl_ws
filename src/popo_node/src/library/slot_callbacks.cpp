@@ -210,21 +210,21 @@ void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
   }
 }
 
-void KobukiRos::publishControllerInfo()
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::ControllerInfoPtr msg(new kobuki_msgs::ControllerInfo);
-    ControllerInfo::Data data = kobuki.getControllerInfoData();
+// void KobukiRos::publishControllerInfo()
+// {
+//   if (ros::ok())
+//   {
+//     kobuki_msgs::ControllerInfoPtr msg(new kobuki_msgs::ControllerInfo);
+//     ControllerInfo::Data data = kobuki.getControllerInfoData();
 
-    msg->type = data.type;
-    msg->p_gain = static_cast<float>(data.p_gain) * 0.001f;;
-    msg->i_gain = static_cast<float>(data.i_gain) * 0.001f;;
-    msg->d_gain = static_cast<float>(data.d_gain) * 0.001f;;
+//     msg->type = data.type;
+//     msg->p_gain = static_cast<float>(data.p_gain) * 0.001f;;
+//     msg->i_gain = static_cast<float>(data.i_gain) * 0.001f;;
+//     msg->d_gain = static_cast<float>(data.d_gain) * 0.001f;;
 
-    controller_info_publisher.publish(msg);
-  }
-}
+//     controller_info_publisher.publish(msg);
+//   }
+// }
 
 /*****************************************************************************
 ** Events
@@ -288,25 +288,6 @@ void KobukiRos::publishCliffEvent(const CliffEvent &event)
     }
     msg->bottom = event.bottom;
     cliff_event_publisher.publish(msg);
-  }
-}
-
-void KobukiRos::publishWheelEvent(const WheelEvent &event)
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
-    switch(event.state) {
-      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
-      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
-      default: break;
-    }
-    switch(event.wheel) {
-      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
-      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
-      default: break;
-    }
-    wheel_event_publisher.publish(msg);
   }
 }
 
@@ -448,4 +429,57 @@ void KobukiRos::publishRawControlCommand(const std::vector<short> &velocity_comm
   return;
 }
 
+void KobukiRos::publishWheelEvent(const WheelEvent &event)
+{
+  if (ros::ok())
+  {
+    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
+    switch(event.state) {
+      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
+      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
+      default: break;
+    }
+    switch(event.wheel) {
+      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
+      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
+      default: break;
+    }
+    wheel_event_publisher.publish(msg);
+  }
+}
+
+void KobukiRos::publishBatteryEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishUpgradeEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishPowerOffEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishRangeSensorEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishBatteryInfoEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishCurrentInfoEvent(const WheelEvent &event)
+{
+  
+}
+
+void KobukiRos::publishSendAppStream(const WheelEvent &event)
+{
+  
+}
 } // namespace kobuki

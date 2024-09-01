@@ -27,7 +27,6 @@ namespace kobuki
 KobukiRos::KobukiRos(std::string& node_name) :
     name(node_name), cmd_vel_timed_out_(false), serial_timed_out_(false),
     slot_version_info(&KobukiRos::publishVersionInfo, *this),
-    slot_stream_data(&KobukiRos::processStreamData, *this),
     slot_button_event(&KobukiRos::publishButtonEvent, *this),
     slot_bumper_event(&KobukiRos::publishBumperEvent, *this),
     slot_cliff_event(&KobukiRos::publishCliffEvent, *this),
@@ -42,7 +41,6 @@ KobukiRos::KobukiRos(std::string& node_name) :
     slot_raw_data_command(&KobukiRos::publishRawDataCommand, *this),
     slot_raw_data_stream(&KobukiRos::publishRawDataStream, *this),
     slot_raw_control_command(&KobukiRos::publishRawControlCommand, *this),
-
     slot_wheel_event(&KobukiRos::publishWheelEvent, *this),
     slot_battery_event(&KobukiRos::publishBatteryEvent, *this),
     slot_upgrade_event(&KobukiRos::publishUpgradeEvent, *this),
@@ -62,8 +60,10 @@ KobukiRos::KobukiRos(std::string& node_name) :
     // slot_battery_info_event(&KobukiRos::publishBatteryInfoEvent, *this),
     // slot_current_info_event(&KobukiRos::publishCurrentInfoEvent, *this),
     // slot_send_app_steam(&KobukiRos::publishSendAppStream, *this)
-  // ဒီကောင်တွေက yoyo မှာမရှိပဲ kobuki မှာပဲရှိတာမို့ delete လုပ်ပါတယ်။
+
+  // ဒီကောင်တွေက yoyo မှာမရှိပဲ kobuki မှာပဲရှိတာမို့ လိုအပ်ရင် delete လုပ်ပါတယ်။
     // slot_controller_info(&KobukiRos::publishControllerInfo, *this),
+    // slot_stream_data(&KobukiRos::processStreamData, *this)
 
   /* Constructor မှာ */
   // ဒါတွေက header မှာကို မပါတာမို့ comment အုပ်တယ်။
@@ -105,7 +105,7 @@ bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   slot_button_event.connect(name + std::string("/events/button"));      // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/ButtonEvent]
   slot_bumper_event.connect(name + std::string("/events/bumper"));      // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/BumperEvent]
   slot_cliff_event.connect(name + std::string("/events/cliff"));        // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/CliffEvent]
-  slot_power_event.connect(name + std::string("/events/power_off"));    // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [std_msgs/Int32]
+  slot_power_event.connect(name + std::string("/events/power_XXX"));    // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [std_msgs/Int32]
   slot_input_event.connect(name + std::string("/events/digital_input"));// topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/DigitalInputEvent]
   slot_robot_event.connect(name + std::string("/events/online"));       // topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/RobotStateEvent]
   slot_debug.connect(name + std::string("/ros_debug")); // ရှိတော့ရှိတယ်။ ပုံစံကွဲတယ်
@@ -306,28 +306,45 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
   /*********************
   ** Turtlebot Required
   **********************/
-  joint_state_publisher = nh.advertise <sensor_msgs::JointState>("joint_states",100);
+  joint_state_publisher = nh.advertise <sensor_msgs::JointState>("joint_states",100); // သူက slot နဲ့ မချိတ်ဘူး။
 
   /*********************
   ** Kobuki Esoterics
   **********************/
-  version_info_publisher = nh.advertise < kobuki_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
-  
-  controller_info_publisher = nh.advertise < kobuki_msgs::ControllerInfo > ("controller_info",  100, true); // latched publisher
-  button_event_publisher = nh.advertise < kobuki_msgs::ButtonEvent > ("events/button", 100);
-  bumper_event_publisher = nh.advertise < kobuki_msgs::BumperEvent > ("events/bumper", 100);
-  cliff_event_publisher  = nh.advertise < kobuki_msgs::CliffEvent >  ("events/cliff",  100);
-  wheel_event_publisher  = nh.advertise < kobuki_msgs::WheelDropEvent > ("events/wheel_drop", 100);
-  power_event_publisher  = nh.advertise < kobuki_msgs::PowerSystemEvent > ("events/power_system", 100);
-  input_event_publisher  = nh.advertise < kobuki_msgs::DigitalInputEvent > ("events/digital_input", 100);
-  robot_event_publisher  = nh.advertise < kobuki_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched
-  sensor_state_publisher = nh.advertise < kobuki_msgs::SensorState > ("sensors/core", 100);
-  dock_ir_publisher = nh.advertise < kobuki_msgs::DockInfraRed > ("sensors/dock_ir", 100);
-  imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
-  raw_imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
-  raw_data_command_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_command", 100);
-  raw_data_stream_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_stream", 100);
-  raw_control_command_publisher = nh.advertise< std_msgs::Int16MultiArray > ("debug/raw_control_command", 100);
+  // latch publisher ဆိုတာက အသစ် ဝင်လာတဲ့ subscribers တွေရှိရင် publisher ရဲ့ last message ကို pubilsh လုပ်ပေးတာပါ။
+  // yoyo နဲ့ kobuki မှာပါတယ်။
+  version_info_publisher        = nh.advertise < driverr_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
+  button_event_publisher        = nh.advertise < driverr_msgs::ButtonEvent > ("events/button", 100);
+  bumper_event_publisher        = nh.advertise < driverr_msgs::BumperEvent > ("events/bumper", 100);
+  cliff_event_publisher         = nh.advertise < driverr_msgs::CliffEvent >  ("events/cliff",  100);
+  power_event_publisher         = nh.advertise < std_msgs::Int32 > ("events/power_XXX", 100);
+  input_event_publisher         = nh.advertise < driverr_msgs::DigitalInputEvent > ("events/digital_input", 100);
+  robot_event_publisher         = nh.advertise < driverr_msgs::RobotStateEvent > ("events/online", 100, true); // also latched
+  // debug
+  // info
+  // warn
+  // error
+  // named
+  raw_data_command_publisher    = nh.advertise < std_msgs::String > ("debug/raw_data_command", 100);
+  raw_data_stream_publisher     = nh.advertise < std_msgs::String > ("debug/raw_data_stream", 100);
+  raw_control_command_publisher = nh.advertise < std_msgs::Int16MultiArray > ("debug/raw_control_command", 100);
+  wheel_status_publisher        = nh.advertise < driverr_msgs::WheelStatus > ("events/wheel_status", 100);// topic ရှိ, အမည်ပြောင်းပေးထားတယ်။ [driver_msgs/WheelStatus]
+
+  // yoyo မှာရှိပြီး kobuki မှာမရရှိ။ တည်ဆောက်ပေးရန်လိုတယ်။
+  battery_event_publisher       = nh.advertise < driver_msgs::PowerSystemEvent > ("events/battery", 100);
+  upgrade_result_publisher      = nh.advertise < std_msgs::String > ("upgrade_result", 100);    
+  power_off_publisher           = nh.advertise < std_msgs::Int32 > ("events/power_off", 100);
+  range_sensor_publisher        = nh.advertise < driver_msgs::RangeSensorEvent  > ("events/range_sensor", 100);
+  battery_info_publisher        = nh.advertise < driver_msgs::BatteryInfo > ("events/battery_info", 100);
+  current_info_publisher        = nh.advertise < driver_msgs::CurrentInfo > ("events/current_info", 100);
+  send_app_publisher            = nh.advertise < std_msgs::String > ("debug/send_data_app", 100);
+
+  // kobuki မှာရှိပြီး yoyo မှာမပါပါ။ ဖျက်ရန်
+  //sensor_state_publisher        = nh.advertise < driverr_msgs::SensorState > ("sensors/core", 100);
+  //dock_ir_publisher             = nh.advertise < driverr_msgs::DockInfraRed > ("sensors/dock_ir", 100);
+  //imu_data_publisher            = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
+  //raw_imu_data_publisher        = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
+
 }
 
 /**

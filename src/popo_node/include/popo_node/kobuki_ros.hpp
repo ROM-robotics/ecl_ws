@@ -74,22 +74,33 @@ private:
    ** Ros Comms
    **********************/
   // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
-  ros::Publisher version_info_publisher, controller_info_publisher;
-  ros::Publisher sensor_state_publisher, joint_state_publisher, dock_ir_publisher;
-  ros::Publisher button_event_publisher, input_event_publisher, robot_event_publisher;
-  ros::Publisher bumper_event_publisher, cliff_event_publisher, power_event_publisher; 
-  ros::Publisher raw_data_command_publisher, raw_data_stream_publisher, raw_control_command_publisher;
+  ros::Publisher version_info_publisher;
+  ros::Publisher button_event_publisher; 
+  ros::Publisher bumper_event_publisher;
+  ros::Publisher cliff_event_publisher; 
+  ros::Publisher power_event_publisher;
+  ros::Publisher input_event_publisher;
+  ros::Publisher robot_event_publisher;
+  ros::Publisher joint_state_publisher; // sensor_state_publisher, dock_ir_publisher;
+  
+  ros::Publisher raw_data_command_publisher;
+  ros::Publisher raw_data_stream_publisher;
+  ros::Publisher raw_control_command_publisher;
+  ros::Publisher wheel_status_publisher;
 
   // ဒီကောင်တွေက yoyo မှာရှိတယ်။ kobuki မှာ မရှိဘူး။
   // ဒီ publisher တွေက kobuki မှာ မရှိတော့ တိုက်ရိုက်ယူလို့မရနိုင်ဘူး။ မှီငြမ်းရေးဖို့လိုပါတယ်။ 
-  ros::Publisher send_app_publisher, battery_event_publisher;
+  ros::Publisher battery_event_publisher;
   ros::Publisher upgrade_result_publisher;
   ros::Publisher power_off_publisher;
+  ros::Publisher range_sensor_publisher;
   ros::Publisher battery_info_publisher;
   ros::Publisher current_info_publisher;
+  ros::Publisher send_app_publisher;
+
+  
   ros::Publisher auth_info_publisher;
-  ros::Publisher wheel_status_publisher;
-  ros::Publisher range_sensor_publisher;
+  //ros::Publisher controller_info_publisher;
 
   // ဒီကောင်တွေက kobuki နဲ့ yoyo မှာရှိတယ်။
   ros::Subscriber velocity_command_subscriber, digital_output_command_subscriber, external_power_command_subscriber;

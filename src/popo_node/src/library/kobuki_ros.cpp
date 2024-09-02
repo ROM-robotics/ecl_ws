@@ -370,7 +370,7 @@ void KobukiRos::subscribeTopics(ros::NodeHandle& nh)
   cancel_iap_subscriber     = nh.subscribe(std::string("commands/cancel_iap"), 10, &KobukiRos::subscribeCancelIap, this);
   current_info_subscriber   = nh.subscribe(std::string("commands/current_info"), 10, &KobukiRos::subscribeCurrentInfo, this);
   force_stop_subscriber     = nh.subscribe(std::string("commands/force_stop"), 10, &KobukiRos::subscribeForceStop, this);
-  send_to_base_subscriber   = nh.subscribe(std::string("commands/send_to_base"), 10, &KobukiRos::subscribeSetToBase, this);
+  send_to_base_subscriber   = nh.subscribe(std::string("commands/send_to_base"), 10, &KobukiRos::subscribeSendToBase, this);
   set_docking_subscriber    = nh.subscribe(std::string("commands/set_docking"), 10, &KobukiRos::subscribeSetDocking, this);
   controller_iap_subscriber = nh.subscribe(std::string("commands/updateonline_iap"), 10, &KobukiRos::subscribeControllerIap, this);
   
